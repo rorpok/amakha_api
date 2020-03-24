@@ -14,9 +14,13 @@ class CreateBoxProductTable extends Migration
     public function up()
     {
         Schema::create('box_product', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+			
+			$table->integer( 'idProduct' )->unsigned();
+			$table->integer( 'idBox' )->unsigned();
+			$table->integer( 'howMuchFit' )->unsigned();
+			$table->primary( [ 'idProduct', 'idBox' ] );
+            
+		});
     }
 
     /**
