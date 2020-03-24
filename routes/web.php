@@ -11,6 +11,10 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->group( [ 'prefix' => '/box' ], function() use ( $router ){ 
+		
+	$router->post( "/", "BoxesController@insertBox" );
+	$router->get( "/", "BoxesController@getAll" );
+	$router->put( "/{idBox}", "BoxesController@updateBox" );
+
 });
