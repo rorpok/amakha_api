@@ -94,5 +94,38 @@ class BoxesController extends Controller
 	*/
 	public function updateBox( $idBox, Request $request ){
 		//lógica para update de uma caixa
+		
+		try{
+			
+			//Validação de dados
+			$validator = Validator::make(
+			
+				$request->all(),
+				ValidationBox::RULE_BOX
+				
+			);
+			
+			if( $validator->fails() )
+				return response()->json( [ 'message'=> $validator->errors() ], Response::HTTP_METHOD_NOT_ALLOWED );
+			
+			//Atualiza registro
+			$box = $this->model->find( $idBox );
+			
+			//Verifica se a caixa a ser atualizada existe
+			if( !$box )
+				return response()->json( [ "message"=> "Caixa não encontrada." ], Response::HTTP_NOT_FOUND );
+			
+			//Atualiza a caixa
+			$box->update( $request->all() );
+			
+			//Return OK
+			return response()->json( true );
+		
+		}catch( QueryException $exception ){
+			
+			//Trata QueryException
+			return  response()->json( [ 'message' => "Erro de conexão com banco de dados." ], Response::HTTP_INTERNAL_SERVER_ERROR );
+			
+		}
 	}
 }
