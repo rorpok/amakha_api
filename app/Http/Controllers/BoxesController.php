@@ -66,6 +66,25 @@ class BoxesController extends Controller
 	*/
 	public function getAll(){
 		//lógica para retorno de todas as caixas
+		
+		try{
+			
+			//Get todas as caixas
+			$boxes = $this->model->all();
+			
+			//Checa se há caixas no banco
+			if( !( count( $boxes ) > 0 ) )
+				return response()->json( [], Respose::HTTP_OK );
+			
+			//Return caixas no banco
+			return response()->json( $boxes );
+		
+		}catch( QueryException $exception ){
+			
+			//Trata QueryException
+			return  response()->json( [ 'message' => "Erro de conexão com banco de dados." ], Response::HTTP_INTERNAL_SERVER_ERROR );
+			
+		}
 	}
 	
 	/**
