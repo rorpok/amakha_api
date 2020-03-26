@@ -78,7 +78,25 @@ class ProductController extends Controller
 	*/
 	public function getProduct(){
 		//Lógica para retorno dos produtos cadastrados
-		return "getProduct";
+		
+		try{
+			
+			//Get todos os produtos
+			$products = $this->model->all();
+			
+			//Checa se há produtos no banco
+			if( !( count( $products ) > 0 ) )
+				return response()->json( [], Response::HTTP_OK );
+			
+			//Return produtos no banco
+			return response()->json( $products, Response::HTTP_OK );
+		
+		}catch( QueryException $exception ){
+			
+			//Trata QueryException
+			return  response()->json( [ 'message' => "Erro de conexão com banco de dados." ], Response::HTTP_INTERNAL_SERVER_ERROR );
+			
+		}
 	}
 	
 	/**
