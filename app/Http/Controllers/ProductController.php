@@ -2,16 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
+use App\Models\ValidationProduct;
+use App\Models\ProductModel;
+
 class ProductController extends Controller
 {
-    /**
+    
+	private $model;
+	
+	/**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct( ProductModel $product )
     {
-        //
+        $this->model = $product;
     }
 
     /**
@@ -19,9 +28,47 @@ class ProductController extends Controller
 	*
 	* @return Illuminate\Http\Response
 	*/
-	public function createProduct(){
+	public function createProduct( Request $request ){
 		//Lógica para inserção de um novo produto
-		return "createProduct";
+		
+		try{
+			
+			//Validação de dados
+			$validator = Validator::make( 
+			
+				$request->all(),
+				ValidationProduct::RULE_PRODUCT
+				
+			);
+			
+			if( $validator->fails() )
+				return response()->json( 
+					
+					[ 'message'=> $validator->errors() ], 
+					Response::HTTP_METHOD_NOT_ALLOWED
+				
+				);
+			
+			//Criação do registro
+			$product = $this->model->create( $request->all() );
+			
+			//Return id do novo registro
+			return response()->json( 
+				[ "id" => $product->idProduct ], 
+				Response::HTTP_CREATED 
+			);
+		
+		}catch( QueryException $exception ){
+			
+			//Trata QueryException
+			return  response()->json( 
+				
+				[ 'message' => "Erro de conexão com banco de dados." ], 
+				Response::HTTP_INTERNAL_SERVER_ERROR 
+			
+			);
+			
+		}
 	}
 	
 	/**
