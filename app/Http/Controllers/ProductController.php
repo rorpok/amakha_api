@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use App\Models\ValidationProduct;
 use App\Models\ProductModel;
+use App\Models\BoxProductModel;
 
 class ProductController extends Controller
 {
@@ -158,8 +159,43 @@ class ProductController extends Controller
 	*
 	* @return lluminate\Http\Response
 	*/
-	public function getProductBoxes(){
+	public function getProductBoxes( $productId ){
 		//Lógica para retorno de um dado BoxProduct
-		return "getProductBoxes";
+		
+		try{
+			
+			//Busca lista de caixas
+			$boxList = BoxProductModel::select( 'idBox' ,'howMuchFit' )
+				->where('idProduct', $productId )
+				->get();
+			
+			//Verifica se existem caixas para o produto
+			if( !( count( $boxList ) > 0 ) )
+				return response()->json( 
+					[ "message"=> "Caixa não encontrada." ], 
+					Response::HTTP_NOT_FOUND 
+				);
+			
+			//Retorna lista de caixas
+			return response()->json(
+			
+				$boxList, 
+				Response::HTTP_OK 
+			
+			);
+			
+		
+		}catch( QueryException $exception ){
+			
+			//Trata QueryException
+			return  response()->json( 
+				
+				[ 'message' => "Erro de conexão com banco de dados." ], 
+				Response::HTTP_INTERNAL_SERVER_ERROR 
+			
+			);
+		
+		}
+		
 	}
 }
