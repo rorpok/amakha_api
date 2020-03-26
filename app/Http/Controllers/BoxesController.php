@@ -74,10 +74,10 @@ class BoxesController extends Controller
 			
 			//Checa se há caixas no banco
 			if( !( count( $boxes ) > 0 ) )
-				return response()->json( [], Respose::HTTP_OK );
+				return response()->json( [], Response::HTTP_OK );
 			
 			//Return caixas no banco
-			return response()->json( $boxes );
+			return response()->json( $boxes, Response::HTTP_OK );
 		
 		}catch( QueryException $exception ){
 			
