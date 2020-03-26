@@ -18,3 +18,14 @@ $router->group( [ 'prefix' => '/box' ], function() use ( $router ){
 	$router->put( "/{idBox}", "BoxesController@updateBox" );
 
 });
+
+$router->group( [ 'prefix' => '/product' ], function() use ( $router ){ 
+		
+	$router->post( "/", "ProductController@createProduct" );
+	$router->get( "/", "ProductController@getProduct" );
+	$router->put( "/{productdId}", "ProductController@updateProduct" );
+	$router->post( "/{productId}/box", "ProductController@createProductBox" );
+	$router->get("/{productId}/box", "ProductController@getProductBoxes");
+	
+
+});
