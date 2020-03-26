@@ -104,9 +104,43 @@ class ProductController extends Controller
 	*
 	* @return lluminate\Http\Response
 	*/
-	public function updateProduct(){
+	public function updateProduct( Request $request, $idProduct ){
 		//Lógica para update de um produto
-		return "updateProduct";
+		
+		try{
+			
+			//Validação de dados
+			$validator = Validator::make(
+			
+				$request->all(),
+				ValidationProduct::RULE_PRODUCT
+				
+			);
+			
+			
+			if( $validator->fails() )
+				return response()->json( [ 'message'=> $validator->errors() ], Response::HTTP_METHOD_NOT_ALLOWED );
+			
+			//Busca produto
+			$product = $this->model->find( $idProduct );
+			
+			//Verifica se o produto a ser atualizado existe
+			if( !$product )
+				return response()->json( [ "message"=> "Produto não encontrado." ], Response::HTTP_NOT_FOUND );
+			
+			//Atualiza produto
+			$product->update( $request->all() );
+			
+			//Return OK
+			return response()->json( true, Response::HTTP_OK );
+		
+		}catch( QueryException $exception ){
+			
+			//Trata QueryException
+			return  response()->json( [ 'message' => "Erro de conexão com banco de dados." ], Response::HTTP_INTERNAL_SERVER_ERROR );
+			
+		}
+		
 	}
 	
 	/**
