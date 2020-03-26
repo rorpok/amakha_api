@@ -2,6 +2,18 @@
 
 Projeto para o desafio Amakha, desenvolvido com Microframework Lumen.
 
+## Sobre a rota /order/boxes
+
+A lógica de alocação de produtos não foi implementada a tempo.
+Este consiste num problema de programação linear, e poderia ser resolvido com a implementação do algoritmo Simplex, ou com alguma de suas variações (minha abordagem).
+Apesar de não conseguir concluir o algoritmo de alocação a tempo mantive um rascunho do mesmo em /App/Models/algoritmoAlocacao.php
+assim pode-se ter um insight de qual seria minha abordagem para solucionar o problema em questão.
+
+Essa solução é altamente NP, mas a alocação de memória é polinomial. 
+Se muitos dos pedidos fossem matrizes com muitos zeros, na pratica, usaria uma outra classe de de algoritmos, usar as chamadas matrizes esparsas. 
+De qualquer forma, existem heurísticas que vão resolver a maioria dos casos, mas essa solucão que rascunhei, apesar de lenta, resolveria todos.
+Em um cenário mais realístico eu poderia, ainda, analisar a entrada, e decidir por qual algoritmo utilizar, semelhante a abordagem utilizada pelo algoritmo de busca do Google.
+
 ## Iniciando o Projeto
 
 Clone o repositório
