@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\ValidationProduct;
 use App\Models\ProductModel;
 use App\Models\BoxProductModel;
+use App\Models\ValidationBoxProduct;
+use App\Models\BoxModel;
 
 class ProductController extends Controller
 {
@@ -149,9 +151,91 @@ class ProductController extends Controller
 	*
 	* @return lluminate\Http\Response
 	*/
-	public function createProductBox(){
+	public function createProductBox( $productId, Request $request ){
 		//Lógica para criação de um BoxProduct
-		return "createProductBox";
+		
+		try{
+			
+			//Validação de dados
+			$validator = Validator::make(
+			
+				$request->all(),
+				ValidationBoxProduct::RULE_BOX_PRODUCT
+				
+			);
+			
+			if( $validator->fails() )
+				return response()->json(
+			
+					[ 'message'=> $validator->errors() ], 
+					Response::HTTP_METHOD_NOT_ALLOWED 
+				
+				);
+			
+			//Verifica se o BoxProduct existe
+			//TODO: Mover para camada model
+			$boxProduct = BoxProductModel::where( 'idProduct', $productId )
+				->where( 'idBox', $request->idBox )
+				->first();
+				
+			if( $boxProduct ){
+				
+				//Atualiza BoxProduct
+				$boxProduct->update( $request->all() );
+				
+				return response()->json(
+			
+					true, 
+					Response::HTTP_OK 
+			
+				);
+			}
+			
+			//Código a diante cria um novo BoxProduct
+			
+			if( !( $this->model->find( $productId ) ) ){//verifica se prduct existe
+				//não
+				return response()->json(
+			
+					[ "message" => 'Produto não encontrado.' ], 
+					Response::HTTP_NOT_FOUND 
+			
+				);
+			}
+			
+			if( !( ( new BoxModel() )->find( $request->idBox ) ) ){ //verifica se box existe
+				//não
+				return response()->json(
+			
+					[ "message" => 'Caixa não encontrada.'], 
+					Response::HTTP_NOT_FOUND 
+			
+				);
+			}
+			
+			$request->request->add( ['idProduct' => $productId] );
+			BoxProductModel::create( $request->all() );
+			//TODO: Checar inserção
+			return response()->json(
+			
+					true, 
+					Response::HTTP_CREATED 
+			
+			);
+			
+			
+		}catch( QueryException $exception ){
+			
+			//Trata QueryException
+			return  response()->json( 
+				
+				[ 'message' => "Erro de conexão com banco de dados." ], 
+				Response::HTTP_INTERNAL_SERVER_ERROR 
+			
+			);
+		
+		}
+		
 	}
 	
 	/**
